@@ -1,14 +1,10 @@
 {
-  "name": "lasso-deresolve",
+  "name": "deresolve",
   "description": "The inverse of require.resolve()",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lasso-js/lasso-deresolve.git"
-  },
   "scripts": {
     "test": "npm run mocha && npm run jshint",
-    "mocha": "node_modules/.bin/mocha --ui bdd --reporter spec test/",
-    "jshint": "node_modules/.bin/jshint src/"
+    "mocha": "mocha --ui bdd --reporter spec test/",
+    "jshint": "jshint src/"
   },
   "author": "Patrick Steele-Idem <pnidem@gmail.com>",
   "maintainers": "Patrick Steele-Idem <pnidem@gmail.com>",
@@ -29,5 +25,16 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patrick-steele-idem/deresolve.git"
+  },
+  "bugs": {
+    "url": "https://github.com/patrick-steele-idem/deresolve/issues"
+  },
+  "homepage": "https://github.com/patrick-steele-idem/deresolve#readme"
 }
