@@ -19,7 +19,12 @@ function removeRegisteredExt(path) {
 }
 
 function findMain(dir) {
-    return resolveFrom(dir, './');
+    try {
+        return resolveFrom(dir, './');
+    } catch(e) {
+        return null;
+    }
+
 }
 
 function relPath(path, from) {
