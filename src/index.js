@@ -7,11 +7,15 @@ var nodePath = require('path');
 
 var nodeModulesPrefixRegExp = /^node_modules[\\\/](.+)/;
 
-function removeRegisteredExt(path) {
+function defaultShouldRemoveExt(ext) {
+    return require.extensions.hasOwnProperty(ext);
+}
+
+function removeRegisteredExt(path, shouldRemoveExt) {
     var basename = nodePath.basename(path);
     var ext = nodePath.extname(basename);
 
-    if (require.extensions[ext]) {
+    if (shouldRemoveExt(ext)) {
         return path.slice(0, 0-ext.length);
     } else {
         return path;
@@ -27,15 +31,18 @@ function findMain(dir) {
 
 }
 
-function relPath(path, from) {
+function relPath(path, from, shouldRemoveExt) {
 	var dirname = nodePath.dirname(path);
-	var main = findMain(dirname);
+	var main = removeRegisteredExt(findMain(dirname), shouldRemoveExt);
+
+    path = removeRegisteredExt(path, shouldRemoveExt);
+
 	if (main === path) {
 		path = nodePath.dirname(path); // We only need to walk to the parent directory if the target is the main file for the directory
 	}
 
 	// Didn't find the target path on the search path so construct a relative path
-	var relativePath = removeRegisteredExt(nodePath.relative(from, path));
+	var relativePath = nodePath.relative(from, path);
 	if (relativePath.charAt(0) !== '.') {
 		relativePath = './' + relativePath;
 	}
@@ -43,15 +50,12 @@ function relPath(path, from) {
     relativePath = relativePath.replace(/[\\]/g, '/');
 
 	return relativePath;
-	// var relPathParts = relPath.split(/[\\\/]/);
-	// if (relPathParts.indexOf('node_modules') === -1) {
-	//	// Only use the relative path if we *not* are crossing into a
-	// }
 }
 
-function deresolve(targetPath, from) {
+function deresolve(targetPath, from, options) {
 	var targetRootDir = lassoProjectRoot.getRootDir(targetPath);
 	var fromRootDir = lassoProjectRoot.getRootDir(from);
+    var shouldRemoveExt = (options && options.shouldRemoveExt) || defaultShouldRemoveExt;
 
     // console.log();
     // console.log('deresolve() - BEGIN');
@@ -62,7 +66,7 @@ function deresolve(targetPath, from) {
 
 	if (targetRootDir && fromRootDir && targetRootDir === fromRootDir) {
         // The target module is in the same project... just use a relative path
-		return relPath(targetPath, from);
+		return relPath(targetPath, from, shouldRemoveExt);
 	}
 
     var matches;
@@ -130,7 +134,7 @@ function deresolve(targetPath, from) {
     }
 
     if (!deresolvedPath) {
-        return relPath(targetPath, from);
+        return relPath(targetPath, from, shouldRemoveExt);
     }
 
     var targetMain = findMain(targetRootDir);
@@ -152,7 +156,7 @@ function deresolve(targetPath, from) {
 	}
 
     deresolvedPath = deresolvedPath.replace(/[\\]/g, '/');
-    deresolvedPath = removeRegisteredExt(deresolvedPath);
+    deresolvedPath = removeRegisteredExt(deresolvedPath, shouldRemoveExt);
 
     return deresolvedPath;
 }
