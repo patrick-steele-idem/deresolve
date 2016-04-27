@@ -33,7 +33,10 @@ function findMain(dir) {
 
 function relPath(path, from, shouldRemoveExt) {
 	var dirname = nodePath.dirname(path);
-	var main = removeRegisteredExt(findMain(dirname), shouldRemoveExt);
+    var main = findMain(dirname);
+    if (main) {
+        main = removeRegisteredExt(main, shouldRemoveExt);
+    }
 
     path = removeRegisteredExt(path, shouldRemoveExt);
 

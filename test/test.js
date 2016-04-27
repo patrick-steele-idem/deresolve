@@ -125,5 +125,14 @@ describe('lasso-deresolve' , function() {
 
         expect(deresolvedPath).to.equal('bar/node_modules/baz');
     });
+
+    it('should resolve correctly for a module in a directory with no main', function() {
+        var path = nodePath.join(fixturesDir, 'test-project/src/no-main/foo.js');
+        var from = nodePath.join(fixturesDir, 'test-project/src/no-main');
+
+        var deresolvedPath = deresolve(path, from);
+
+        expect(deresolvedPath).to.equal('./foo');
+    });
 });
 
